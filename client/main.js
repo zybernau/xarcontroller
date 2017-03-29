@@ -55,6 +55,28 @@
 		  }).on('move', function(evt, data) {
 		    //debug(data);
 		    console.log("moved. Data=> " + data);
+		    if(!deviceReady) {
+		    	return false;
+		    }
+    	    if(data.direction.angle === "up") {
+		    	if(data.angle.degree > 90) {
+					socket.emit('fd', reg);
+					socket.emit('rt',reg);
+		    	}
+		    	if(data.angle.degree < 90) {
+		    		socket.emit('fd', reg);
+					socket.emit('lt',reg);
+		    	}
+		    } else {
+		    	if(data.angle.degree > 90) {
+					socket.emit('bk', reg);
+					socket.emit('rt',reg);
+		    	}
+		    	if(data.angle.degree < 90) {
+		    		socket.emit('bk', reg);
+					socket.emit('rt',reg);
+		    	}
+		    }
 		  }).on('dir:up plain:up dir:left plain:left dir:down ' +
 		        'plain:down dir:right plain:right',
 		        function(evt, data) {
@@ -77,9 +99,11 @@
 	var reg = {};
 	reg.name = "xar controller UI";
 
+	var deviceReady = false;
 	socket.on('reg', function(msg) {
 		console.log('got the message from server: ' + msg.name);
-			$('#deviceId').text(msg.name);
+		$('#deviceId').text(msg.name);
+		deviceReady = msg.deviceReady;
 	});
 
 	function registerWithServer() {

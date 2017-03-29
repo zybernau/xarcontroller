@@ -50,8 +50,12 @@ io.on('connection', function(socket){
     socket.on('regb', function(msg) {
     	console.log('registered browser: ' + msg.name);
     	msg.name = connectedPi;
+        msg.deviceReady = !(pisocks == undefined);
     	socket.emit('reg', msg);
-    	pisocks.emit('ready',msg);
+        if (pisocks != undefined) {
+            pisocks.emit('ready',msg);
+        }
+    	
     });
 
     socket.on('fd', function(msg) {
