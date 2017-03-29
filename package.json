@@ -1,0 +1,10 @@
+{
+  "name": "XarController",
+  "version": "0.0.1",
+  "description": "XAR controller for PI",
+  "dependencies": {
+    "express": "^4.15.2",
+    "nipplejs": "^0.6.7",
+    "socket.io": "^1.7.3"
+  }
+}
