@@ -52,6 +52,10 @@
 		    //dump(evt.type);
 		    //debug(data);
 		    console.log("started. data=>" + data);
+		    if(!deviceReady) {
+		    	return false;
+		    }
+		    socket.emit('stp', reg);
 		  }).on('move', function(evt, data) {
 		    //debug(data);
 		    console.log("moved. Data=> " + data);
@@ -67,15 +71,19 @@
 		    		socket.emit('fd', reg);
 					socket.emit('lt',reg);
 		    	}
-		    } else {
+		    } else if (data.direction.angle === "down")  {
 		    	if(data.angle.degree > 90) {
 					socket.emit('bk', reg);
 					socket.emit('rt',reg);
 		    	}
 		    	if(data.angle.degree < 90) {
 		    		socket.emit('bk', reg);
-					socket.emit('rt',reg);
+					socket.emit('lt',reg);
 		    	}
+		    } else if (data.direction.angle === "right")  {
+		    	socket.emit('rt',reg);
+		    } else if (data.direction.angle === "left")  {
+		    	socket.emit('lt',reg);
 		    }
 		  }).on('dir:up plain:up dir:left plain:left dir:down ' +
 		        'plain:down dir:right plain:right',
@@ -84,7 +92,12 @@
 		    console.log("direction changed");
 		  }
 		       ).on('pressure', function(evt, data) {
-		    console.log("pressure is on => " + data);
+		       	if(!deviceReady) {
+		    		return false;
+			    }
+			    reg.speed = 90;
+			    socket.emit('stp', reg);
+		    	console.log("pressure is on => " + data);
 		  });
 
 

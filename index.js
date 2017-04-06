@@ -34,7 +34,7 @@ io.on('connection', function(socket){
     socket.on('init', function(msg){
 	    console.log('init message: ' + msg.name);
 	    var imsg = {};
-	    imsg.name = 'PI-Ran1234';
+	    imsg.name = 'PI-Ran1234' + '- ' + msg.name;
 	    connectedPi = imsg.name;
 	    socket.emit('init', imsg);
   	});
@@ -45,6 +45,7 @@ io.on('connection', function(socket){
     	console.log('Ready message: ' + msg.name);
     	pisocks = socket;
     	pisocks.emit('moveForward', msg);
+        pisocks.emit('motorStop', msg);
     });
 
     socket.on('regb', function(msg) {
@@ -54,6 +55,9 @@ io.on('connection', function(socket){
     	socket.emit('reg', msg);
         if (pisocks != undefined) {
             pisocks.emit('ready',msg);
+        } else {
+            // call init again
+            socket.emit('init', msg);
         }
     	
     });
@@ -68,10 +72,12 @@ io.on('connection', function(socket){
 
 
 	socket.on('rt', function(msg) {
+        pisocks.emit('turnReset', msg);
     	pisocks.emit('turnRight', msg);
     }); 
 
     socket.on('lt', function(msg) {
+        pisocks.emit('turnReset', msg);
     	pisocks.emit('turnLeft', msg);
     });
 
@@ -91,6 +97,22 @@ io.on('connection', function(socket){
     	pisocks.emit('panBottom', msg);
     });
 
+    //motor.stop()
+    socket.on('stp', function(msg) {
+        //console.log("motor stop called");
+        pisocks.emit('motorStop', msg);
+    });
+
+    socket.on('trr', function(msg) {
+        pisocks.emit('turnReset', msg);
+    });
+
+    socket.on('spd', function(msg) {
+        console.log('speed set from UI: ' + msg.speed);
+        msg.speed = 100;
+        pisocks.emit('motorSpeed', msg);
+    });
+
 
 
 });
@@ -99,6 +121,6 @@ io.on('disconnect', function(socket){
   console.log('a user disconnected');
 });
 
-http.listen(8000, function(){
-  console.log('listening on *:8000');
+http.listen(8001, function(){
+  console.log('listening on *:8001');
 });
